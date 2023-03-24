@@ -2,7 +2,6 @@ import java.util.List;
 import java.util.ArrayList;
 public class Question {
     private String question;
-    private int testInt;
     private List<String> answers;
     private String correctAnswer;
 
@@ -11,7 +10,6 @@ public class Question {
         this.answers = answers;
         this.correctAnswer = correctAnswer;
     }
-
     public String getQuestion() {
         return question;
     }
