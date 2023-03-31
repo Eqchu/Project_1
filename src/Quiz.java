@@ -17,27 +17,54 @@ public class Quiz {
     private User user;
     private Scanner scan = new Scanner(System.in);
     private int numOfQuestions;
+    private int fileOrWeb;
 
     public Quiz() {
     }
-
-    void startQuiz() {
+    void welcome(){
+        System.out.println("Welcome to the quiz game! In this quiz you can challenge your knowledge to answer different \n" +
+                "questions with various topics.");
         String input;
         System.out.print("Enter your name: ");
         input = scan.nextLine();
         user = new User(input);
-        System.out.print("Hello, " + user.getName() + "! Enter number of questions to play with: ");
+        System.out.print("Hello, " + user.getName() + "! ");
+        System.out.println("Do you want to play quiz from file(1) or from the web(2)?");
+        fileOrWeb = Integer.parseInt(scan.nextLine());
+    }
+
+    void startQuizURL() {
+        System.out.println("How many questions would you like to answer?");
         numOfQuestions = scan.nextInt();
         System.out.println("Lets start game with " + numOfQuestions + " questions..");
+        System.out.println();
+    }
+    void startQuizFile() {
+        System.out.println("Maximum number of questions is 20 and minimum number of questions is 3.");
+        System.out.println("How many questions would you like to answer?");
+        int numberOfQuestions = Integer.parseInt(scan.nextLine());
+        int rng = (int) Math.round((Math.random() * (20 - 1)) + 1); //Generating random number from 1 to 20
+        if(numberOfQuestions <= 20 && numberOfQuestions >= 3){
+            numOfQuestions = numberOfQuestions;
+            System.out.println("Lets start game with " + numOfQuestions + " questions..");
+        }
+        else if(numberOfQuestions < 3){
+            System.out.println("Minimum number of questions is 3. Game starts with random number of questions.");
+            numOfQuestions = rng;
+        }
+        else{
+            numOfQuestions = rng;
+            System.out.println("Maximum number of questions is 20. Game starts with random number of questions.");
+        }
         System.out.println();
     }
 
     void endQuiz() {
         System.out.println();
-        System.out.println("Great game, " + user.getName() + "! You answered " + user.getScore() + " of " + numOfQuestions + " questions correctly.");
+        System.out.println("Great game, " + user.getName() + "! You answered " + user.getScore() + " out of " + numOfQuestions + " questions correctly.");
     }
 
-    void readQuestions() throws Exception {
+    void readQuestionsFile() throws Exception {
         File file = new File("src/Quiz");
         Scanner sc = new Scanner(file);
 
@@ -95,6 +122,7 @@ public class Quiz {
         int answerIndex;
         List<Question> shuffledQuestions = new ArrayList<>(questions);
         Collections.shuffle(shuffledQuestions);
+        shuffledQuestions = shuffledQuestions.subList(0, numOfQuestions); //Take only as much questions as user asked for
         for (int i = 0; i < shuffledQuestions.size(); i++) {
             Question question = shuffledQuestions.get(i);
             System.out.println(i+1 + "/" + shuffledQuestions.size() + " " + question.getQuestion());
@@ -122,7 +150,7 @@ public class Quiz {
         }
     }
 
-    public List<Question> getQuestions() {
-        return questions;
+    public int getFileOrWeb() {
+        return fileOrWeb;
     }
 }

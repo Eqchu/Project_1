@@ -1,9 +1,8 @@
 import java.util.List;
-import java.util.ArrayList;
 public class Question {
     private String question;
     private List<String> answers;
-    private String correctAnswer;
+    private final String correctAnswer;
 
 
     Question (String question, List<String> answers, String correctAnswer) {
