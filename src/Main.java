@@ -10,12 +10,6 @@ public class Main {
         quiz.readQuestions();
         quiz.startQuiz();
         quiz.presentQuestions();
-
-        System.out.println("Õiged vastused olid: ");
-        List<Question> quizQuestions= quiz.getQuestions();
-        for (Question el : quizQuestions) {
-            System.out.println(el.getQuestion() + " - " + el.getCorrectAnswer());
-        }
-
+        quiz.endQuiz();
     }
 }

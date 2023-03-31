@@ -19,12 +19,17 @@ public class Quiz {
 
     void startQuiz() {
         String input;
-        System.out.print("Sisesta oma nimi: ");
+        System.out.print("Enter your name: ");
         input = scan.nextLine();
         user = new User(input);
-        System.out.println("Tere, " + user.getName() + "!");
-        System.out.println("Alustame mängu..");
+        System.out.println("Hello, " + user.getName() + "!");
+        System.out.println("Lets start..");
         System.out.println();
+    }
+
+    void endQuiz() {
+        System.out.println();
+        System.out.println("Great game, " + user.getName() + "! Your total score is: " + user.getScore());
     }
 
 
@@ -52,22 +57,21 @@ public class Quiz {
         int answerIndex;
         List<Question> shuffledQuestions = new ArrayList<>(questions);
         Collections.shuffle(shuffledQuestions);
-        for (Question question : shuffledQuestions) {
-            System.out.println(question.getQuestion());
+        for (int i = 0; i < shuffledQuestions.size(); i++) {
+            Question question = shuffledQuestions.get(i);
+            System.out.println(i+1 + "/" + shuffledQuestions.size() + " " + question.getQuestion());
             presentAnswers(question);
-            System.out.print("Sisesta vastuse number: ");
+            System.out.print("Enter number of correct answer: ");
             answerIndex = Integer.parseInt(scan.nextLine()) - 1;
 
 
             if (answerIndex >= 0 && answerIndex < question.getAnswers().size() &&
                     question.getAnswers().get(answerIndex).equals(question.getCorrectAnswer())) {
-                System.out.println("Õige vastus!");
                 user.addScore(1);
-                System.out.println("Sinu skoor on: " + user.getScore());
+                System.out.println("Correct answer! Your score is: " + user.getScore());
             } else {
-                System.out.println("See on kahjuks vale vastus!");
-                System.out.println("Õige vastus oleks olnud: " + question.getCorrectAnswer());
-                System.out.println("Sinu skoor on: " + user.getScore());
+                System.out.println("Incorrect answer! Your score is: " + user.getScore());
+                System.out.println("Correct answer was: " + question.getCorrectAnswer());
             }
             System.out.println();
         }
