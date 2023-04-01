@@ -43,7 +43,7 @@ public class Quiz {
         System.out.println("Maximum number of questions is 20 and minimum number of questions is 3.");
         System.out.println("How many questions would you like to answer?");
         int numberOfQuestions = Integer.parseInt(scan.nextLine());
-        int rng = (int) Math.round((Math.random() * (20 - 1)) + 1); //Generating random number from 1 to 20
+        int rng = (int) Math.round((Math.random() * (20 - 3)) + 3); //Generating random number from 1 to 20 if user selects no of questions outside boundaries
         if(numberOfQuestions <= 20 && numberOfQuestions >= 3){
             numOfQuestions = numberOfQuestions;
             System.out.println("Lets start game with " + numOfQuestions + " questions..");
@@ -76,7 +76,7 @@ public class Quiz {
             for (int i = 1; i < lineaslist.length - 1; i++) {
                 answerOptions.add(lineaslist[i]);
             }
-            String correctAnswer = lineaslist[(lineaslist.length - 1)].substring(8);
+            String correctAnswer = lineaslist[(lineaslist.length - 1)].substring(8); //Removing "Answer: " from start of element
             Question q = new Question(oneQuestion, answerOptions, correctAnswer);
             questions.add(q);
         }
@@ -120,9 +120,9 @@ public class Quiz {
 
     void presentQuestions() {
         int answerIndex;
-        List<Question> shuffledQuestions = new ArrayList<>(questions);
-        Collections.shuffle(shuffledQuestions);
-        shuffledQuestions = shuffledQuestions.subList(0, numOfQuestions); //Take only as much questions as user asked for
+        List<Question> shuffledQuestions = new ArrayList<>(questions); //Making a list of all questions to shuffle
+        Collections.shuffle(shuffledQuestions); //Shuffeling questions
+        shuffledQuestions = shuffledQuestions.subList(0, numOfQuestions); //Take only as much of shuffeled questions as user asked for
         for (int i = 0; i < shuffledQuestions.size(); i++) {
             Question question = shuffledQuestions.get(i);
             System.out.println(i+1 + "/" + shuffledQuestions.size() + " " + question.getQuestion());
