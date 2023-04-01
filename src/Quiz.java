@@ -7,9 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URL;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 public class Quiz {
@@ -37,28 +35,22 @@ public class Quiz {
         fileOrWeb = scan.nextInt();
     }
 
-    void startQuizURL() {
+    void startQuiz() {
+        if (fileOrWeb == 1)
+            System.out.println("Maximum number of questions is 20 and minimum number of questions is 3.");
         System.out.println("How many questions would you like to answer?");
         numOfQuestions = scan.nextInt();
-        System.out.println("Lets start game with " + numOfQuestions + " questions..");
-        System.out.println();
-    }
-    void startQuizFile() {
-        System.out.println("Maximum number of questions is 20 and minimum number of questions is 3.");
-        System.out.println("How many questions would you like to answer?");
-        int numberOfQuestions = scan.nextInt();
-        int rng = (int) Math.round((Math.random() * (20 - 3)) + 3); //Generating random number from 1 to 20 if user selects no of questions outside boundaries
-        if(numberOfQuestions <= 20 && numberOfQuestions >= 3){
-            numOfQuestions = numberOfQuestions;
-            System.out.println("Lets start game with " + numOfQuestions + " questions..");
-        }
-        else if(numberOfQuestions < 3){
-            System.out.println("Minimum number of questions is 3. Game starts with random number of questions.");
-            numOfQuestions = rng;
-        }
-        else{
-            numOfQuestions = rng;
-            System.out.println("Maximum number of questions is 20. Game starts with random number of questions.");
+        if (fileOrWeb == 1) {
+            int rng = (int) Math.round((Math.random() * (20 - 3)) + 3); //Generating random number from 1 to 20 if user selects no of questions outside boundaries
+            if (numOfQuestions <= 20 && numOfQuestions >= 3) {
+                System.out.println("Lets start game with " + numOfQuestions + " questions..");
+            } else if (numOfQuestions < 3) {
+                System.out.println("Minimum number of questions is 3. Game starts with random number of questions.");
+                numOfQuestions = rng;
+            } else {
+                numOfQuestions = rng;
+                System.out.println("Maximum number of questions is 20. Game starts with random number of questions.");
+            }
         }
         System.out.println();
     }
@@ -79,6 +71,8 @@ public class Quiz {
             Question q = new Question(oneQuestion, answerOptions, correctAnswer);
             questions.add(q);
         }
+        Collections.shuffle(questions);
+        questions = questions.subList(0, numOfQuestions);
     }
 
      void readQuestionsURL() throws IOException {
@@ -119,12 +113,10 @@ public class Quiz {
 
     void presentQuestions() {
         int answerIndex;
-        List<Question> shuffledQuestions = new ArrayList<>(questions); //Making a list of all questions to shuffle
-        Collections.shuffle(shuffledQuestions); //Shuffeling questions
-        shuffledQuestions = shuffledQuestions.subList(0, numOfQuestions); //Take only as much of shuffeled questions as user asked for
-        for (int i = 0; i < shuffledQuestions.size(); i++) {
-            Question question = shuffledQuestions.get(i);
-            System.out.println(i+1 + "/" + shuffledQuestions.size() + " " + question.getQuestion());
+        Collections.shuffle(questions); //Shuffeling questions
+        for (int i = 0; i < questions.size(); i++) {
+            Question question = questions.get(i);
+            System.out.println(i+1 + "/" + questions.size() + " " + question.getQuestion());
             presentAnswers(question);
             System.out.print("Enter number of correct answer: ");
             answerIndex = scan.nextInt() - 1;
