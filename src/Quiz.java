@@ -19,18 +19,22 @@ public class Quiz {
     private int numOfQuestions;
     private int fileOrWeb;
 
-    public Quiz() {
+    public Quiz(User user) {
+        this.user = user;
     }
     void welcome(){
-        System.out.println("Welcome to the quiz game! In this quiz you can challenge your knowledge to answer different \n" +
-                "questions with various topics.");
-        String input;
-        System.out.print("Enter your name: ");
-        input = scan.nextLine();
-        user = new User(input);
-        System.out.print("Hello, " + user.getName() + "! ");
+        if (user.getName() == null) {
+            System.out.println("Welcome to the quiz game! In this quiz you can challenge your knowledge to answer different \n" +
+                    "questions with various topics.");
+            System.out.println();
+            String input;
+            System.out.print("Enter your name: ");
+            input = scan.nextLine();
+            this.user.setName(input);
+            System.out.print("Hello, " + user.getName() + "! ");
+        }
         System.out.println("Do you want to play quiz from file(1) or from the web(2)?");
-        fileOrWeb = Integer.parseInt(scan.nextLine());
+        fileOrWeb = scan.nextInt();
     }
 
     void startQuizURL() {
@@ -42,7 +46,7 @@ public class Quiz {
     void startQuizFile() {
         System.out.println("Maximum number of questions is 20 and minimum number of questions is 3.");
         System.out.println("How many questions would you like to answer?");
-        int numberOfQuestions = Integer.parseInt(scan.nextLine());
+        int numberOfQuestions = scan.nextInt();
         int rng = (int) Math.round((Math.random() * (20 - 3)) + 3); //Generating random number from 1 to 20 if user selects no of questions outside boundaries
         if(numberOfQuestions <= 20 && numberOfQuestions >= 3){
             numOfQuestions = numberOfQuestions;
@@ -57,11 +61,6 @@ public class Quiz {
             System.out.println("Maximum number of questions is 20. Game starts with random number of questions.");
         }
         System.out.println();
-    }
-
-    void endQuiz() {
-        System.out.println();
-        System.out.println("Great game, " + user.getName() + "! You answered " + user.getScore() + " out of " + numOfQuestions + " questions correctly.");
     }
 
     void readQuestionsFile() throws Exception {
@@ -138,6 +137,7 @@ public class Quiz {
                 System.out.println("Incorrect answer! Your score is: " + user.getScore());
                 System.out.println("Correct answer was: " + question.getCorrectAnswer());
             }
+            user.addTotalAnswers(1);
             System.out.println();
         }
     }
