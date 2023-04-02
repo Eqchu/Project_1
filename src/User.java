@@ -4,15 +4,18 @@ public class User {
     private int totalScore;
     private int totalAnswers;
 
+    // Konstruktorid
     public User () {
     }
     public User (String name) {
         this.name = name;
     }
 
+    // Meetodid nime seadmiseks ja saamiseks. // Meetodid kogu vastuste arvu saamiseks ja seadmiseks
     public void setName(String name) {
         this.name = name;
     }
+
     public int getTotalAnswers() {
         return totalAnswers;
     }
@@ -23,10 +26,12 @@ public class User {
         return name;
     }
 
+    // Meetodid skoori saamiseks ja seadmiseks
     public int getScore() {
         return score;
     }
 
+    // Meetodid kogu skoori saamiseks ja seadmiseks
     public int getTotalScore() {
         return totalScore;
     }

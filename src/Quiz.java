@@ -11,16 +11,16 @@ import java.net.URL;
 import org.json.JSONObject;
 import org.json.JSONArray;
 public class Quiz {
-    private List<Question> questions = new ArrayList<>();
+    private List<Question> questions = new ArrayList<>();// küsimuste loend
     private User user;
     private Scanner scan = new Scanner(System.in);
-    private int numOfQuestions;
-    private int fileOrWeb;
+    private int numOfQuestions; // küsimuste arv
+    private int fileOrWeb; // kasutaja valik: kas küsimused failist või veebist
 
     public Quiz(User user) {
         this.user = user;
-    }
-    void welcome(){
+    } // konstruktor, millel on kasutaja parameeter
+    void welcome(){// tervitusmeetod
         if (user.getName() == null) {
             System.out.println("Welcome to the quiz game! In this quiz you can challenge your knowledge to answer different \n" +
                     "questions with various topics.");
@@ -35,7 +35,7 @@ public class Quiz {
         fileOrWeb = scan.nextInt();
     }
 
-    void startQuiz() {
+    void startQuiz() {// meetod, et alustada mängu
         if (fileOrWeb == 1)
             System.out.println("Maximum number of questions is 20 and minimum number of questions is 3.");
         System.out.println("How many questions would you like to answer?");
@@ -59,20 +59,20 @@ public class Quiz {
         File file = new File("src/Quiz");
         Scanner sc = new Scanner(file);
 
-        while (sc.hasNextLine()) {
-            String line = sc.nextLine();
-            String[] lineaslist = line.split("; ");
-            String oneQuestion = lineaslist[0];
-            List<String> answerOptions = new ArrayList<>();
-            for (int i = 1; i < lineaslist.length - 1; i++) {
+        while (sc.hasNextLine()) {//Loeme faili sisu ridade kaupa, kuni rida eksisteerib
+            String line = sc.nextLine();//Salvestame praeguse rea String tüüpi muutujasse
+            String[] lineaslist = line.split("; ");//Jagame rea semikoolonite kohalt massiiviks
+            String oneQuestion = lineaslist[0];//Salvestame küsimuse esimese elemendi
+            List<String> answerOptions = new ArrayList<>();//Loome uue ArrayListi vastusteks
+            for (int i = 1; i < lineaslist.length - 1; i++) {//Loome tsükli, et lisada kõik vastused vastuste ArrayListi
                 answerOptions.add(lineaslist[i]);
             }
-            String correctAnswer = lineaslist[(lineaslist.length - 1)].substring(8); //Removing "Answer: " from start of element
+            String correctAnswer = lineaslist[(lineaslist.length - 1)].substring(8); //Removing "Answer: " from start of element////Salvestame õige vastuse viimase elemendi ja eemaldame sellest esimesed 8 tähemärki
             Question q = new Question(oneQuestion, answerOptions, correctAnswer);
             questions.add(q);
         }
-        Collections.shuffle(questions);
-        questions = questions.subList(0, numOfQuestions);
+        Collections.shuffle(questions);//Segame küsimused
+        questions = questions.subList(0, numOfQuestions);//Võtame nii palju küsimusi, kui kasutaja soovib
     }
 
      void readQuestionsURL() throws IOException {
@@ -80,7 +80,7 @@ public class Quiz {
         URL url = new URL(urlString);
         String jsonString;
 
-        try (InputStream input = url.openStream()) {
+        try (InputStream input = url.openStream()) {//Proovime avada ühendust URL-iga
             InputStreamReader isr = new InputStreamReader(input);
             BufferedReader reader = new BufferedReader(isr);
             StringBuilder jsonText = new StringBuilder();
@@ -91,9 +91,9 @@ public class Quiz {
             jsonString =  jsonText.toString();
         }
 
-        JSONArray jsonArray = new JSONArray(jsonString);
+        JSONArray jsonArray = new JSONArray(jsonString);// Loome JSONArray objekti, mis sisaldab kõiki küsimusi
 
-        for (int i = 0; i < jsonArray.length(); i++) {
+        for (int i = 0; i < jsonArray.length(); i++) {// Käime kõik küsimused läbi ja lisame need küsimuste listi
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             String question = jsonObject.getString("question");
             String correctAnswer = jsonObject.getString("correctAnswer");
@@ -105,13 +105,13 @@ public class Quiz {
                     answers.add(answersJson.get(j).toString());
                 }
             }
-            Collections.shuffle(answers);
+            Collections.shuffle(answers);// segab küsimuse vastused juhuslikult
             Question q = new Question(question, answers, correctAnswer);
             questions.add(q);
         }
     }
 
-    void presentQuestions() {
+    void presentQuestions() {//meetod esitab küsimused, võtab kasutajalt vastuseid vastu ja kontrollib nende õigsust.
         int answerIndex;
         Collections.shuffle(questions); //Shuffeling questions
         for (int i = 0; i < questions.size(); i++) {
@@ -134,7 +134,7 @@ public class Quiz {
         }
     }
 
-    void presentAnswers(Question question) {
+    void presentAnswers(Question question) {// argumendiks Question objekti ning prindib välja kõik vastusevariantid, mis selle küsimuse juurde kuuluvad
         int i = 1;
         for (String answer : question.getAnswers()) {
             System.out.println(i + ". " + answer);
@@ -144,5 +144,5 @@ public class Quiz {
 
     public int getFileOrWeb() {
         return fileOrWeb;
-    }
+    }//teave selle kohta, kas kasutaja valis küsimuste saamiseks failist või veebist
 }
