@@ -42,16 +42,15 @@ public class Quiz {
         numOfQuestions = scan.nextInt();
         if (fileOrWeb == 1) {
             int rng = (int) Math.round((Math.random() * (20 - 3)) + 3); //Generating random number from 1 to 20 if user selects no of questions outside boundaries
-            if (numOfQuestions <= 20 && numOfQuestions >= 3) {
-                System.out.println("Lets start game with " + numOfQuestions + " questions..");
-            } else if (numOfQuestions < 3) {
+            if (numOfQuestions < 3) {
                 System.out.println("Minimum number of questions is 3. Game starts with random number of questions.");
                 numOfQuestions = rng;
-            } else {
-                numOfQuestions = rng;
+            } else if (numOfQuestions > 20) {
                 System.out.println("Maximum number of questions is 20. Game starts with random number of questions.");
+                numOfQuestions = rng;
             }
         }
+        System.out.println("Lets start game with " + numOfQuestions + " questions..");
         System.out.println();
     }
 
@@ -88,25 +87,25 @@ public class Quiz {
             while ((c = reader.read()) != -1) {
                 jsonText.append((char) c);
             }
-            jsonString =  jsonText.toString();
+            jsonString =  jsonText.toString(); // küsimuste info stringina
         }
 
-        JSONArray jsonArray = new JSONArray(jsonString);// Loome JSONArray objekti, mis sisaldab kõiki küsimusi
+        JSONArray jsonArray = new JSONArray(jsonString);// Loeme küsimused JSONArray objekti
 
-        for (int i = 0; i < jsonArray.length(); i++) {// Käime kõik küsimused läbi ja lisame need küsimuste listi
+        for (int i = 0; i < jsonArray.length(); i++) {// Käime kõik küsimused läbi
             JSONObject jsonObject = jsonArray.getJSONObject(i);
-            String question = jsonObject.getString("question");
-            String correctAnswer = jsonObject.getString("correctAnswer");
+            String question = jsonObject.getString("question"); // loeme sisse küsimuse
+            String correctAnswer = jsonObject.getString("correctAnswer"); // loeme sisse õige vastuse
             List<String> answers = new ArrayList<>();
-            answers.add(correctAnswer);
-            JSONArray answersJson = jsonObject.getJSONArray("incorrectAnswers");
+            answers.add(correctAnswer); // lisame õige vastuse vastuste listi
+            JSONArray answersJson = jsonObject.getJSONArray("incorrectAnswers"); // loeme sisse valed vastused ja lisame vastuste listi
             if (answersJson != null) {
                 for (int j = 0; j < answersJson.length(); j++) {
                     answers.add(answersJson.get(j).toString());
                 }
             }
-            Collections.shuffle(answers);// segab küsimuse vastused juhuslikult
-            Question q = new Question(question, answers, correctAnswer);
+            Collections.shuffle(answers);// kuna õige vastus on vastuste listis alati esimene, siis segame vastused juhuslikku järjekorda
+            Question q = new Question(question, answers, correctAnswer); // loome uue küsimuse objekti
             questions.add(q);
         }
     }
