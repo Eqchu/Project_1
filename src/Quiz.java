@@ -10,13 +10,15 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import org.json.JSONObject;
 import org.json.JSONArray;
+import java.util.Random;
 public class Quiz {
     private List<Question> questions = new ArrayList<>();// küsimuste loend
     private User user;
     private Scanner scan = new Scanner(System.in);
     private int numOfQuestions; // küsimuste arv
+    private int difficulty; // küsimuste raskusaste
+    private String levelOfDifficulty; // tekstiline;
     private int fileOrWeb; // kasutaja valik: kas küsimused failist või veebist
-
     public Quiz(User user) {
         this.user = user;
     } // konstruktor, millel on kasutaja parameeter
@@ -31,32 +33,63 @@ public class Quiz {
             this.user.setName(input);
             System.out.print("Hello, " + user.getName() + "! ");
         }
-        System.out.println("Do you want to play quiz from file(1) or from the web(2)?");
+        System.out.println("Do you want to play quiz from file(1), from the web(2) or pick random(3)?");
         fileOrWeb = scan.nextInt();
     }
 
     void startQuiz() {// meetod, et alustada mängu
-        if (fileOrWeb == 1)
-            System.out.println("Maximum number of questions is 20 and minimum number of questions is 3.");
-        System.out.println("How many questions would you like to answer?");
-        numOfQuestions = scan.nextInt();
-        if (fileOrWeb == 1) {
-            int rng = (int) Math.round((Math.random() * (20 - 3)) + 3); //Generating random number from 1 to 20 if user selects no of questions outside boundaries
-            if (numOfQuestions < 3) {
-                System.out.println("Minimum number of questions is 3. Game starts with random number of questions.");
-                numOfQuestions = rng;
-            } else if (numOfQuestions > 20) {
-                System.out.println("Maximum number of questions is 20. Game starts with random number of questions.");
-                numOfQuestions = rng;
+        Random random = new Random();
+
+        if (fileOrWeb != 3) {
+            if (fileOrWeb == 1)
+                System.out.println("Maximum number of questions is 20 and minimum number of questions is 3.");
+            else {
+                System.out.println("Choose the level of question difficulty: easy (1), medium(2), hard(3)");
+                difficulty = scan.nextInt();
+            }
+            System.out.println("How many questions would you like to answer?");
+            numOfQuestions = scan.nextInt();
+            if (fileOrWeb == 1) {
+                int rng = (int) Math.round((Math.random() * (20 - 3)) + 3); //Generating random number from 1 to 20 if user selects no of questions outside boundaries
+                if (numOfQuestions < 3) {
+                    System.out.println("Minimum number of questions is 3. Game starts with random number of questions.");
+                    numOfQuestions = rng;
+                } else if (numOfQuestions > 20) {
+                    System.out.println("Maximum number of questions is 20. Game starts with random number of questions.");
+                    numOfQuestions = rng;
+                }
             }
         }
-        System.out.println("Lets start game with " + numOfQuestions + " questions..");
+        else {
+            fileOrWeb = 2;
+        }
+
+        difficulty = difficulty == 0 ? random.nextInt(3-1) + 1 : difficulty;
+        numOfQuestions = numOfQuestions == 0? random.nextInt(30-5) +5 : numOfQuestions;
+
+        if (difficulty == 1) {
+            levelOfDifficulty = "easy";
+        }
+        else if (difficulty == 2) {
+            levelOfDifficulty = "medium";
+        }
+        else {
+            levelOfDifficulty = "hard";
+        }
+
+        if (fileOrWeb == 1) {
+            System.out.println("Lets start the game from file with " + numOfQuestions + " questions..");
+        }
+        else {
+            System.out.println("Lets start the game from web with " + numOfQuestions + " " + levelOfDifficulty + " questions..");
+        }
         System.out.println();
     }
 
     void readQuestionsFile() throws Exception {
         File file = new File("src/Quiz");
         Scanner sc = new Scanner(file);
+        
 
         while (sc.hasNextLine()) {//Loeme faili sisu ridade kaupa, kuni rida eksisteerib
             String line = sc.nextLine();//Salvestame praeguse rea String tüüpi muutujasse
@@ -75,7 +108,7 @@ public class Quiz {
     }
 
      void readQuestionsURL() throws IOException {
-        String urlString = "https://the-trivia-api.com/api/questions?limit=" + numOfQuestions + "&region=EE&difficulty=easy";
+        String urlString = "https://the-trivia-api.com/api/questions?limit=" + numOfQuestions + "&region=EE&difficulty=" + levelOfDifficulty;
         URL url = new URL(urlString);
         String jsonString;
 

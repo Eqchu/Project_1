@@ -7,7 +7,7 @@ public class Main {
         User user = new User();
         Scanner scanner = new Scanner(System.in);
         boolean newGame;
-        // Loome tsükli, et lubada kasutajal mitu korda mängida
+        // Loome tsükli, et lubada kasutajal mitu Ekorda mängida
         do {
             // Loome uue küsimustiku ja lähtestame kasutaja skoori
             Quiz quiz = new Quiz(user);
