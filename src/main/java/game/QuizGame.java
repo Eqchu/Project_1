@@ -1,27 +1,29 @@
 package game;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.json.JSONException;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class QuizGame extends Application {
-    private Label questionLabel;
     private Button okButton = new Button("Ok");
     private Button checkAnswerButton = new Button("Check answer");
     private Button nextButton = new Button("Next");
     private Button nextQuestionButton = new Button("Next question");
     private int currentQuestion;
-    private Question[] questions;
     private User user;
     private Quiz quiz;
 
@@ -37,6 +39,9 @@ public class QuizGame extends Application {
         Label nameLabel = new Label("Enter your name:");
         TextField nameTextField = new TextField();
 
+        // If user presses Enter . The input is saved and Next button is pressed.
+        setEnterKeyPressAction(nameTextField, nextButton);
+
         // Set button action
         nextButton.setOnAction(event -> {
             user.setName(nameTextField.getText());
@@ -49,11 +54,15 @@ public class QuizGame extends Application {
             levelSelection.getItems().add("Medium");
             levelSelection.getItems().add("Hard");
 
+            //When user presses ENTER, Next button is fired.
+            setEnterKeyPressAction(levelSelection, nextButton);
+
             nextButton.setOnAction(event1 -> {
                     String level = (String) levelSelection.getValue();
                     quiz.setLevelOfDifficulty(level.toLowerCase());
                     Label questionLabel = new Label("How many questions would you like to answer? (1-50)");
                     TextField numberTextField = new TextField();
+                    setEnterKeyPressAction(numberTextField, nextButton);
 
                     nextButton.setOnAction(event2 -> {
                         int numOfQuestions = Integer.parseInt(numberTextField.getText());
@@ -95,10 +104,10 @@ public class QuizGame extends Application {
                             final Question[] question = {questions.get(currentQuestion)};
                             quizQuestionLabel.setText((currentQuestion + 1) + "/" + questions.size() + " " + question[0].getQuestion());
                             AtomicReference<List<String>> answers = new AtomicReference<>(question[0].getAnswers());
-                            rb1.setText("1. " + answers.get().get(0));
-                            rb2.setText("2. " + answers.get().get(1));
-                            rb3.setText("3. " + answers.get().get(2));
-                            rb4.setText("4. " + answers.get().get(3));
+                            rb1.setText(answers.get().get(0));
+                            rb2.setText( answers.get().get(1));
+                            rb3.setText(answers.get().get(2));
+                            rb4.setText(answers.get().get(3));
 
                             checkAnswerButton.setOnAction(event4 -> {
                                 question[0] = questions.get(currentQuestion);
@@ -131,7 +140,6 @@ public class QuizGame extends Application {
                                     rb1.setSelected(true);
                                 } else {
                                     showAlert("Quiz ended. Final score: " + user.getScore());
-                                    System.exit(0);
                                 }
                             }));
 
@@ -183,6 +191,41 @@ public class QuizGame extends Application {
             // Set the scene on the primary stage
             primaryStage.setScene(difficultyScene);
         });
+        primaryStage.setOnHiding(event -> {
+            Stage endGame = new Stage();
+            // Making question and two buttons
+            Label label = new Label("Do you really want to quit?");
+            Button yesButton = new Button("Yes");
+            Button noButton = new Button("No");
+
+            // sündmuse lisamine nupule Jah
+            yesButton.setOnAction(closeEvent -> {
+                    endGame.hide();
+            });
+
+            // sündmuse lisamine nupule Ei
+            noButton.setOnAction(closeEvent -> {
+                    primaryStage.show();
+                    endGame.hide();
+
+            });
+            VBox endGameLayout = new VBox(10);
+            endGameLayout.setAlignment(Pos.CENTER);
+            endGameLayout.setPadding(new Insets(20));
+
+            Label quitLabel = new Label("Do you really want to quit?");
+
+            HBox buttonLayout = new HBox(10);
+            buttonLayout.setAlignment(Pos.CENTER);
+            buttonLayout.getChildren().addAll(yesButton, noButton);
+
+            endGameLayout.getChildren().addAll(quitLabel, buttonLayout);
+
+            Scene endGameScene = new Scene(endGameLayout, 400, 250);
+            endGame.setScene(endGameScene);
+            endGame.setTitle("Confirmation");
+            endGame.show();
+        });
 
         // Create a VBox layout and add components
         VBox vbox = new VBox(10);
@@ -203,15 +246,26 @@ public class QuizGame extends Application {
         Stage alertStage = new Stage();
         Label label = new Label(message);
         Button closeButton = new Button("Close");
-        closeButton.setOnAction(e -> alertStage.close());
+        closeButton.setOnAction(e -> {
+            alertStage.close();
+            System.exit(0);
+        });
 
-        VBox alertRoot = new VBox(10);
-        alertRoot.setAlignment(Pos.CENTER);
-        alertRoot.setPadding(new Insets(20));
-        alertRoot.getChildren().addAll(label, closeButton);
+        VBox alertLayout = new VBox(10);
+        alertLayout.setAlignment(Pos.CENTER);
+        alertLayout.setPadding(new Insets(20));
+        alertLayout.getChildren().addAll(label, closeButton);
 
-        alertStage.setScene(new Scene(alertRoot, 200, 150));
+        alertStage.setScene(new Scene(alertLayout, 200, 150));
+        alertStage.setTitle("Game over!");
         alertStage.show();
+    }
+    private void setEnterKeyPressAction(Node node, Button button) {
+        node.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                button.fire();
+            }
+        });
     }
 
 }
