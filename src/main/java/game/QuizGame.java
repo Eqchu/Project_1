@@ -109,6 +109,7 @@ public class QuizGame extends Application {
                                 if (userAnswer.equals(correctAnswer)) {
                                     user.addScore(1);
                                     quizAnswerLabel.setText("Correct answer! Your score is: " + user.getScore());
+                                    quizCorrectLabel.setText("");
                                 } else {
                                     quizAnswerLabel.setText("Incorrect answer! Your score is: " + user.getScore());
                                     quizCorrectLabel.setText("Correct answer was: " + correctAnswer);
@@ -116,15 +117,17 @@ public class QuizGame extends Application {
                             });
 
                             nextQuestionButton.setOnAction((event5 -> {
+                                quizAnswerLabel.setText("Your score is: " + user.getScore());
+                                quizCorrectLabel.setText("");
                                 currentQuestion++;
                                 if (currentQuestion < questions.size()) {
                                     question[0] = questions.get(currentQuestion);
                                     quizQuestionLabel.setText((currentQuestion +1 )+ "/" + questions.size() + " " + question[0].getQuestion());
                                     answers.set(question[0].getAnswers());
-                                    rb1.setText("1. " + answers.get().get(0));
-                                    rb2.setText("2. " + answers.get().get(1));
-                                    rb3.setText("3. " + answers.get().get(2));
-                                    rb4.setText("4. " + answers.get().get(3));
+                                    rb1.setText(answers.get().get(0));
+                                    rb2.setText(answers.get().get(1));
+                                    rb3.setText(answers.get().get(2));
+                                    rb4.setText(answers.get().get(3));
                                     rb1.setSelected(true);
                                 } else {
                                     showAlert("Quiz ended. Final score: " + user.getScore());
@@ -135,7 +138,7 @@ public class QuizGame extends Application {
 
                             VBox gameLayout = new VBox(10);
                             gameLayout.setPadding(new Insets(20));
-                            Scene gameScene = new Scene(gameLayout, 600, 250, Color.SNOW);
+                            Scene gameScene = new Scene(gameLayout, 600, 300, Color.SNOW);
 
                             // Create a VBox layout and add components
                             gameLayout.getChildren().addAll(
