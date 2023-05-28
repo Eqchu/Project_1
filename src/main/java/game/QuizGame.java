@@ -13,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import org.json.JSONException;
 import java.io.IOException;
 import java.util.List;
@@ -47,18 +48,18 @@ public class QuizGame extends Application {
 
         // Set button action
         nextButton.setOnAction(event -> {
-                    user.setName(nameTextField.getText());
-                    Label helloLabel = new Label("Hello, " + user.getName() + "!");
+            user.setName(nameTextField.getText());
+            Label helloLabel = new Label("Hello, " + user.getName() + "!");
 
-                    // Create UI components for difficulty selection
-                    Label difficultyLabel = new Label("Select the level of quiz difficulty:");
-                    ChoiceBox levelSelection = new ChoiceBox();
-                    levelSelection.getItems().add("Easy");
-                    levelSelection.getItems().add("Medium");
-                    levelSelection.getItems().add("Hard");
+            // Create UI components for difficulty selection
+            Label difficultyLabel = new Label("Select the level of quiz difficulty:");
+            ChoiceBox levelSelection = new ChoiceBox();
+            levelSelection.getItems().add("Easy");
+            levelSelection.getItems().add("Medium");
+            levelSelection.getItems().add("Hard");
 
-                    //When user presses ENTER, Next button is fired.
-                    setEnterKeyPressAction(levelSelection, nextButton);
+            //When user presses ENTER, Next button is fired.
+            setEnterKeyPressAction(levelSelection, nextButton);
 
             Slider slider = new Slider(1, 50, 1);
             slider.setBlockIncrement(1);
@@ -66,7 +67,34 @@ public class QuizGame extends Application {
             slider.setShowTickLabels(true);
             slider.setShowTickMarks(true);
             slider.setMajorTickUnit(1);
-            slider.setMinorTickCount(0);
+            slider.setMinorTickCount(4); // Display minor ticks between major ticks
+
+            slider.setLabelFormatter(new StringConverter<Double>() {
+                @Override
+                public String toString(Double value) {
+                    int intValue = value.intValue();
+                    if (intValue % 5 == 0) {
+                        return String.valueOf(intValue);
+                    } else if (intValue == 1) {
+                        return String.valueOf(intValue);
+                    }
+                    else {
+                        return "";
+                    }
+                }
+                @Override
+                public Double fromString(String string) {
+                    return Double.valueOf(string);
+                }
+            });
+
+            Label numOfQuestionsLabel = new Label();
+            numOfQuestionsLabel.setText(String.valueOf((int) slider.getValue())); // Set initial value
+
+            slider.valueProperty().addListener((observable, oldValue, newValue) -> {
+                numOfQuestionsLabel.setText(String.valueOf(newValue.intValue()));
+            });
+
 
             nextButton.setOnAction(event1 -> {
                 String level = (String) levelSelection.getValue();
@@ -201,7 +229,7 @@ public class QuizGame extends Application {
                 // Create a VBox layout and add components
                 VBox numOfQuestionLayout = new VBox(10);
                 numOfQuestionLayout.setPadding(new Insets(20));
-                numOfQuestionLayout.getChildren().addAll(questionLabel, slider, nextButton);
+                numOfQuestionLayout.getChildren().addAll(questionLabel, slider, numOfQuestionsLabel ,nextButton);
 
                 // Create the scene
                 Scene numOfQuestionScene = new Scene(numOfQuestionLayout, 400, 250, Color.SNOW);
@@ -316,7 +344,4 @@ public class QuizGame extends Application {
             }
         });
     }
-
-
-
 }
