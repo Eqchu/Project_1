@@ -213,7 +213,7 @@ public class QuizGame extends Application {
 
                             } else {
                                 showAlert("Quiz ended. Final score: " + user.getScore());
-                                showAlert("Great game, " + user.getName() + "!\n \n" + "You answered " + user.getTotalScore() + " out of\n" + user.getTotalAnswers() + " questions correctly.");
+                                showAlert("Great game, " + user.getName() + "!\n \n" + "You answered " + user.getTotalScore() + " out of\n" + quiz.getNumOfQuestions() + " questions correctly.");
                             }
                         }));
 
