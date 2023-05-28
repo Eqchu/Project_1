@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+
+
 public class QuizGame extends Application {
     private Button okButton = new Button("Ok");
     private Button checkAnswerButton = new Button("Check answer");
@@ -70,9 +72,6 @@ public class QuizGame extends Application {
                 String level = (String) levelSelection.getValue();
                 quiz.setLevelOfDifficulty(level.toLowerCase());
                 Label questionLabel = new Label("How many questions would you like to answer? (1-50)");
-                //TextField numberTextField = new TextField();
-                //etEnterKeyPressAction(numberTextField, nextButton);
-
 
                 nextButton.setOnAction(event2 -> {
                     int numOfQuestions = (int) slider.getValue();
@@ -89,6 +88,7 @@ public class QuizGame extends Application {
 
                     //Defining and initializing labels
                     Label quizQuestionLabel = new Label();
+                    Label quizQuestionLabel2 = new Label();
                     Label quizAnswerLabel = new Label();
                     Label quizCorrectLabel = new Label();
                     List<Question> questions = quiz.getQuestions();
@@ -113,12 +113,10 @@ public class QuizGame extends Application {
 
 
                     okButton.setOnAction(event3 -> {
-
                         final Question[] question = {questions.get(currentQuestion)};
-                        String questionText = (currentQuestion + 1) + "/" + questions.size() + " " + question[0].getQuestion();
+                        String questionText = (currentQuestion + 1) + "/" + questions.size() + " " + splitSentence(question[0].getQuestion(), 90);
 
                         quizQuestionLabel.setText(questionText);
-
 
                         AtomicReference<List<String>> answers = new AtomicReference<>(question[0].getAnswers());
                         rb1.setText(answers.get().get(0));
@@ -140,7 +138,7 @@ public class QuizGame extends Application {
                                 quizAnswerLabel.setText("Incorrect answer! Your score is: " + user.getScore());
                                 quizCorrectLabel.setText("Correct answer was: " + correctAnswer);
                             }
-                            // Keela CheckAnswer nupp
+                            // Keela CheckAnswer nupp , et ei saaks ebaausalt skoorida
                             checkAnswerButton.setDisable(true);
                         });
 
@@ -150,8 +148,9 @@ public class QuizGame extends Application {
                             currentQuestion++;
                             if (currentQuestion < questions.size()) {
                                 question[0] = questions.get(currentQuestion);
-                                quizQuestionLabel.setText((currentQuestion +1 )+ "/" + questions.size() + " " + question[0].getQuestion());
 
+
+                                quizQuestionLabel.setText((currentQuestion + 1) + "/" + questions.size() + " " + splitSentence(question[0].getQuestion(), 90));
 
                                 answers.set(question[0].getAnswers());
                                 rb1.setText(answers.get().get(0));
@@ -169,19 +168,22 @@ public class QuizGame extends Application {
 
 
                         VBox gameLayout = new VBox(10);
-                        gameLayout.setPadding(new Insets(20));
+                        gameLayout.setPadding(new Insets(0,10,10,20));
+
+                        gameLayout.getChildren().addAll(
+                                quizQuestionLabel,
+                                rb1, rb2, rb3, rb4,
+                                checkAnswerButton,
+                                nextQuestionButton,
+                                quizAnswerLabel,
+                                quizCorrectLabel
+                        );
+
                         Scene gameScene = new Scene(gameLayout, 600, 300, Color.SNOW);
 
-                        // Create a VBox layout and add components
-                        gameLayout.getChildren().addAll(
-                                quizQuestionLabel, rb1, rb2, rb3, rb4,
-                                checkAnswerButton ,nextQuestionButton,
-                                quizAnswerLabel, quizCorrectLabel);
-
-                        // Create the scene
-                        // Set the scene on the primary stage
                         if (group.getSelectedToggle() == rb1)
                             primaryStage.setScene(gameScene);
+
 
                     });
                     // Create a VBox layout and add components
@@ -252,8 +254,8 @@ public class QuizGame extends Application {
         });
 
         // Create a VBox layout and add components
-        VBox vbox = new VBox(20);
-        vbox.setPadding(new Insets(30));
+        VBox vbox = new VBox(10);
+        vbox.setPadding(new Insets(20));
         vbox.getChildren().addAll(welcomeLabel, nameLabel, nameTextField, nextButton);
 
         // Create the scene
@@ -265,6 +267,27 @@ public class QuizGame extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+//Meetod splitSentence, et jagada pikemad küsimused kaheks, sest muidu ei ole küsimuse lõpp näha
+    public String splitSentence(String sentence, int maxLength) {
+        if (sentence.length() <= maxLength) {
+            return sentence; // Kui lause ei ületa maksimaalset pikkust, tagastatakse originaalne lause
+        }
+
+        int splitIndex = maxLength;
+        while (splitIndex > 0 && sentence.charAt(splitIndex) != ' ') {
+            splitIndex--;
+        }
+
+        if (splitIndex == 0) {
+            splitIndex = maxLength; // Kui tühikukohta ei leitud, jagatakse pikkuse järgi
+        }
+
+        String firstPart = sentence.substring(0, splitIndex).trim();
+        String secondPart = sentence.substring(splitIndex).trim();
+
+        return firstPart + "\n" + "        " + secondPart;//Tühik on siin selleks pikk, et oleks kaunim teise rea algus
+    }
+
 
     private void showAlert(String message) {
         Stage alertStage = new Stage();
