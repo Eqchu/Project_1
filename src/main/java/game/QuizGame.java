@@ -18,7 +18,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-
+import java.util.Random;
 
 
 public class QuizGame extends Application {
@@ -26,6 +26,7 @@ public class QuizGame extends Application {
     private Button checkAnswerButton = new Button("Check answer");
     private Button nextButton = new Button("Next");
     private Button nextQuestionButton = new Button("Next question");
+    private Button feelingLuckyButton = new Button("Feeling lucky");
     private int currentQuestion;
     private User user;
     private Quiz quiz;
@@ -35,6 +36,7 @@ public class QuizGame extends Application {
         // Initialize user object
         user = new User();
         quiz = new Quiz(user);
+        Random random = new Random();
 
         // Create UI components
         Label welcomeLabel = new Label("Welcome to the quiz game! \n\nIn this quiz you can challenge your knowledge to answer different\n" +
@@ -95,11 +97,30 @@ public class QuizGame extends Application {
                 numOfQuestionsLabel.setText(String.valueOf(newValue.intValue()));
             });
 
+            feelingLuckyButton.setOnAction(event0 -> {
+                int difficulty = random.nextInt(3-1) + 1;
+                if (difficulty == 1) {
+                    levelSelection.setValue("Easy");
+                }
+                else if (difficulty == 2) {
+                    levelSelection.setValue("Medium");
+                }
+                else {
+                    levelSelection.setValue("Hard");
+                }
+                nextButton.fire();
+            } );
 
             nextButton.setOnAction(event1 -> {
                 String level = (String) levelSelection.getValue();
                 quiz.setLevelOfDifficulty(level.toLowerCase());
                 Label questionLabel = new Label("How many questions would you like to answer? (1-50)");
+
+                feelingLuckyButton.setOnAction(event11 -> {
+                    int num = random.nextInt(50-1) + 1;
+                    slider.setValue(num);
+                    nextButton.fire();
+                });
 
                 nextButton.setOnAction(event2 -> {
                     int numOfQuestions = (int) slider.getValue();
@@ -229,7 +250,7 @@ public class QuizGame extends Application {
                 // Create a VBox layout and add components
                 VBox numOfQuestionLayout = new VBox(10);
                 numOfQuestionLayout.setPadding(new Insets(20));
-                numOfQuestionLayout.getChildren().addAll(questionLabel, slider, numOfQuestionsLabel ,nextButton);
+                numOfQuestionLayout.getChildren().addAll(questionLabel, slider, numOfQuestionsLabel ,nextButton, feelingLuckyButton);
 
                 // Create the scene
                 Scene numOfQuestionScene = new Scene(numOfQuestionLayout, 400, 250, Color.SNOW);
@@ -241,7 +262,7 @@ public class QuizGame extends Application {
             // Create a VBox layout and add components
             VBox difficultyLayout = new VBox(10);
             difficultyLayout.setPadding(new Insets(20));
-            difficultyLayout.getChildren().addAll(helloLabel, difficultyLabel, levelSelection, nextButton);
+            difficultyLayout.getChildren().addAll(helloLabel, difficultyLabel, levelSelection, nextButton, feelingLuckyButton);
             // Create the scene
             Scene difficultyScene = new Scene(difficultyLayout, 400, 250, Color.SNOW);
             // Set the scene on the primary stage
