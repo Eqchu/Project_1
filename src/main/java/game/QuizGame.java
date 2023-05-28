@@ -140,6 +140,7 @@ public class QuizGame extends Application {
                             }
                             // Keela CheckAnswer nupp , et ei saaks ebaausalt skoorida
                             checkAnswerButton.setDisable(true);
+                            user.addTotalAnswers(1);
                         });
 
                         nextQuestionButton.setOnAction((event5 -> {
@@ -163,6 +164,7 @@ public class QuizGame extends Application {
 
                             } else {
                                 showAlert("Quiz ended. Final score: " + user.getScore());
+                                showAlert("Great game, " + user.getName() + "!\n \n" + "You answered " + user.getTotalScore() + " out of\n" + user.getTotalAnswers() + " questions correctly.");
                             }
                         }));
 
