@@ -39,148 +39,172 @@ public class QuizGame extends Application {
         Label nameLabel = new Label("Enter your name:");
         TextField nameTextField = new TextField();
 
+
         // If user presses Enter . The input is saved and Next button is pressed.
         setEnterKeyPressAction(nameTextField, nextButton);
 
         // Set button action
         nextButton.setOnAction(event -> {
-            user.setName(nameTextField.getText());
-            Label helloLabel = new Label("Hello, " + user.getName() + "!");
+                    user.setName(nameTextField.getText());
+                    Label helloLabel = new Label("Hello, " + user.getName() + "!");
 
-            // Create UI components for difficulty selection
-            Label difficultyLabel = new Label("Select the level of quiz difficulty:");
-            ChoiceBox levelSelection = new ChoiceBox();
-            levelSelection.getItems().add("Easy");
-            levelSelection.getItems().add("Medium");
-            levelSelection.getItems().add("Hard");
+                    // Create UI components for difficulty selection
+                    Label difficultyLabel = new Label("Select the level of quiz difficulty:");
+                    ChoiceBox levelSelection = new ChoiceBox();
+                    levelSelection.getItems().add("Easy");
+                    levelSelection.getItems().add("Medium");
+                    levelSelection.getItems().add("Hard");
 
-            //When user presses ENTER, Next button is fired.
-            setEnterKeyPressAction(levelSelection, nextButton);
+                    //When user presses ENTER, Next button is fired.
+                    setEnterKeyPressAction(levelSelection, nextButton);
+
+            Slider slider = new Slider(1, 50, 1);
+            slider.setBlockIncrement(1);
+            slider.setSnapToTicks(true);
+            slider.setShowTickLabels(true);
+            slider.setShowTickMarks(true);
+            slider.setMajorTickUnit(1);
+            slider.setMinorTickCount(0);
 
             nextButton.setOnAction(event1 -> {
-                    String level = (String) levelSelection.getValue();
-                    quiz.setLevelOfDifficulty(level.toLowerCase());
-                    Label questionLabel = new Label("How many questions would you like to answer? (1-50)");
-                    TextField numberTextField = new TextField();
-                    setEnterKeyPressAction(numberTextField, nextButton);
+                String level = (String) levelSelection.getValue();
+                quiz.setLevelOfDifficulty(level.toLowerCase());
+                Label questionLabel = new Label("How many questions would you like to answer? (1-50)");
+                //TextField numberTextField = new TextField();
+                //etEnterKeyPressAction(numberTextField, nextButton);
 
-                    nextButton.setOnAction(event2 -> {
-                        int numOfQuestions = Integer.parseInt(numberTextField.getText());
-                        quiz.setNumOfQuestions(numOfQuestions);
-                        Label startGameLabel = new Label("Lets start the game with " + quiz.getNumOfQuestions() + " " + quiz.getLevelOfDifficulty() +" questions!");
-                        try {
-                            quiz.readQuestionsURL();
-                        } catch (IOException e) {
-                            System.out.println(e.getMessage());
-                        } catch (JSONException e) {
-                            System.out.println(e.getMessage());
-                        }
 
-                        //Defining and initializing labels
-                        Label quizQuestionLabel = new Label();
-                        Label quizAnswerLabel = new Label();
-                        Label quizCorrectLabel = new Label();
-                        List<Question> questions = quiz.getQuestions();
+                nextButton.setOnAction(event2 -> {
+                    int numOfQuestions = (int) slider.getValue();
+                    quiz.setNumOfQuestions(numOfQuestions);
+                    Label startGameLabel = new Label("Lets start the game with " + quiz.getNumOfQuestions() + " " + quiz.getLevelOfDifficulty() +" questions!");
 
-                        //Defining and initializing radiobuttons
-                        final ToggleGroup group = new ToggleGroup();
-                        RadioButton rb1 = new RadioButton();
-                        RadioButton rb2 = new RadioButton();
-                        RadioButton rb3 = new RadioButton();
-                        RadioButton rb4 = new RadioButton();
-                        rb1.setUserData(0);
-                        rb2.setUserData(1);
-                        rb3.setUserData(2);
-                        rb4.setUserData(3);
+                    try {
+                        quiz.readQuestionsURL();
+                    } catch (IOException e) {
+                        System.out.println(e.getMessage());
+                    } catch (JSONException e) {
+                        System.out.println(e.getMessage());
+                    }
 
-                        rb1.setToggleGroup(group);
-                        rb1.setSelected(true);
-                        rb2.setToggleGroup(group);
-                        rb3.setToggleGroup(group);
-                        rb4.setToggleGroup(group);
+                    //Defining and initializing labels
+                    Label quizQuestionLabel = new Label();
+                    Label quizAnswerLabel = new Label();
+                    Label quizCorrectLabel = new Label();
+                    List<Question> questions = quiz.getQuestions();
 
-                        okButton.setOnAction(event3 -> {
+                    //Defining and initializing radiobuttons
+                    final ToggleGroup group = new ToggleGroup();
+                    RadioButton rb1 = new RadioButton();
+                    RadioButton rb2 = new RadioButton();
+                    RadioButton rb3 = new RadioButton();
+                    RadioButton rb4 = new RadioButton();
+                    rb1.setUserData(0);
+                    rb2.setUserData(1);
+                    rb3.setUserData(2);
+                    rb4.setUserData(3);
 
-                            final Question[] question = {questions.get(currentQuestion)};
-                            quizQuestionLabel.setText((currentQuestion + 1) + "/" + questions.size() + " " + question[0].getQuestion());
-                            AtomicReference<List<String>> answers = new AtomicReference<>(question[0].getAnswers());
-                            rb1.setText(answers.get().get(0));
-                            rb2.setText( answers.get().get(1));
-                            rb3.setText(answers.get().get(2));
-                            rb4.setText(answers.get().get(3));
+                    rb1.setToggleGroup(group);
+                    rb1.setSelected(true);
+                    rb2.setToggleGroup(group);
+                    rb3.setToggleGroup(group);
+                    rb4.setToggleGroup(group);
 
-                            checkAnswerButton.setOnAction(event4 -> {
-                                question[0] = questions.get(currentQuestion);
-                                String correctAnswer = question[0].getCorrectAnswer();
-                                int selectedAnswerIndex = (int) group.getSelectedToggle().getUserData();
-                                String userAnswer = question[0].getAnswers().get(selectedAnswerIndex);
 
-                                if (userAnswer.equals(correctAnswer)) {
-                                    user.addScore(1);
-                                    quizAnswerLabel.setText("Correct answer! Your score is: " + user.getScore());
-                                    quizCorrectLabel.setText("");
-                                } else {
-                                    quizAnswerLabel.setText("Incorrect answer! Your score is: " + user.getScore());
-                                    quizCorrectLabel.setText("Correct answer was: " + correctAnswer);
-                                }
-                            });
 
-                            nextQuestionButton.setOnAction((event5 -> {
-                                quizAnswerLabel.setText("Your score is: " + user.getScore());
+                    okButton.setOnAction(event3 -> {
+
+                        final Question[] question = {questions.get(currentQuestion)};
+                        String questionText = (currentQuestion + 1) + "/" + questions.size() + " " + question[0].getQuestion();
+
+                        quizQuestionLabel.setText(questionText);
+
+
+                        AtomicReference<List<String>> answers = new AtomicReference<>(question[0].getAnswers());
+                        rb1.setText(answers.get().get(0));
+                        rb2.setText( answers.get().get(1));
+                        rb3.setText(answers.get().get(2));
+                        rb4.setText(answers.get().get(3));
+
+                        checkAnswerButton.setOnAction(event4 -> {
+                            question[0] = questions.get(currentQuestion);
+                            String correctAnswer = question[0].getCorrectAnswer();
+                            int selectedAnswerIndex = (int) group.getSelectedToggle().getUserData();
+                            String userAnswer = question[0].getAnswers().get(selectedAnswerIndex);
+
+                            if (userAnswer.equals(correctAnswer)) {
+                                user.addScore(1);
+                                quizAnswerLabel.setText("Correct answer! Your score is: " + user.getScore());
                                 quizCorrectLabel.setText("");
-                                currentQuestion++;
-                                if (currentQuestion < questions.size()) {
-                                    question[0] = questions.get(currentQuestion);
-                                    quizQuestionLabel.setText((currentQuestion +1 )+ "/" + questions.size() + " " + question[0].getQuestion());
-                                    answers.set(question[0].getAnswers());
-                                    rb1.setText(answers.get().get(0));
-                                    rb2.setText(answers.get().get(1));
-                                    rb3.setText(answers.get().get(2));
-                                    rb4.setText(answers.get().get(3));
-                                    rb1.setSelected(true);
-                                } else {
-                                    showAlert("Quiz ended. Final score: " + user.getScore());
-                                }
-                            }));
+                            } else {
+                                quizAnswerLabel.setText("Incorrect answer! Your score is: " + user.getScore());
+                                quizCorrectLabel.setText("Correct answer was: " + correctAnswer);
+                            }
+                            // Keela CheckAnswer nupp
+                            checkAnswerButton.setDisable(true);
+                        });
+
+                        nextQuestionButton.setOnAction((event5 -> {
+                            quizAnswerLabel.setText("Your score is: " + user.getScore());
+                            quizCorrectLabel.setText("");
+                            currentQuestion++;
+                            if (currentQuestion < questions.size()) {
+                                question[0] = questions.get(currentQuestion);
+                                quizQuestionLabel.setText((currentQuestion +1 )+ "/" + questions.size() + " " + question[0].getQuestion());
 
 
-                            VBox gameLayout = new VBox(10);
-                            gameLayout.setPadding(new Insets(20));
-                            Scene gameScene = new Scene(gameLayout, 600, 300, Color.SNOW);
+                                answers.set(question[0].getAnswers());
+                                rb1.setText(answers.get().get(0));
+                                rb2.setText(answers.get().get(1));
+                                rb3.setText(answers.get().get(2));
+                                rb4.setText(answers.get().get(3));
+                                rb1.setSelected(true);
+                                // Luba CheckAnswer nupp
+                                checkAnswerButton.setDisable(false);
 
-                            // Create a VBox layout and add components
-                            gameLayout.getChildren().addAll(
-                                    quizQuestionLabel, rb1, rb2, rb3, rb4,
-                                    checkAnswerButton ,nextQuestionButton,
-                                    quizAnswerLabel, quizCorrectLabel);
+                            } else {
+                                showAlert("Quiz ended. Final score: " + user.getScore());
+                            }
+                        }));
 
-                            // Create the scene
-                            // Set the scene on the primary stage
-                            if (group.getSelectedToggle() == rb1)
+
+                        VBox gameLayout = new VBox(10);
+                        gameLayout.setPadding(new Insets(20));
+                        Scene gameScene = new Scene(gameLayout, 600, 300, Color.SNOW);
+
+                        // Create a VBox layout and add components
+                        gameLayout.getChildren().addAll(
+                                quizQuestionLabel, rb1, rb2, rb3, rb4,
+                                checkAnswerButton ,nextQuestionButton,
+                                quizAnswerLabel, quizCorrectLabel);
+
+                        // Create the scene
+                        // Set the scene on the primary stage
+                        if (group.getSelectedToggle() == rb1)
                             primaryStage.setScene(gameScene);
 
-                        });
-                        // Create a VBox layout and add components
-                        VBox startGameLayout = new VBox(10);
-                        startGameLayout.setPadding(new Insets(20));
-                        startGameLayout.getChildren().addAll(startGameLabel, okButton);
-                        // Create the scene
-                        Scene startGameScene = new Scene(startGameLayout, 400, 250, Color.SNOW);
-                        // Set the scene on the primary stage
-                        primaryStage.setScene(startGameScene);
                     });
-
                     // Create a VBox layout and add components
-                    VBox numOfQuestionLayout = new VBox(10);
-                    numOfQuestionLayout.setPadding(new Insets(20));
-                    numOfQuestionLayout.getChildren().addAll(questionLabel, numberTextField, nextButton);
-
+                    VBox startGameLayout = new VBox(10);
+                    startGameLayout.setPadding(new Insets(20));
+                    startGameLayout.getChildren().addAll(startGameLabel, okButton);
                     // Create the scene
-                    Scene numOfQuestionScene = new Scene(numOfQuestionLayout, 400, 250, Color.SNOW);
-
+                    Scene startGameScene = new Scene(startGameLayout, 400, 250, Color.SNOW);
                     // Set the scene on the primary stage
-                    primaryStage.setScene(numOfQuestionScene);
-                    });
+                    primaryStage.setScene(startGameScene);
+                });
+
+                // Create a VBox layout and add components
+                VBox numOfQuestionLayout = new VBox(10);
+                numOfQuestionLayout.setPadding(new Insets(20));
+                numOfQuestionLayout.getChildren().addAll(questionLabel, slider, nextButton);
+
+                // Create the scene
+                Scene numOfQuestionScene = new Scene(numOfQuestionLayout, 400, 250, Color.SNOW);
+
+                // Set the scene on the primary stage
+                primaryStage.setScene(numOfQuestionScene);
+            });
 
             // Create a VBox layout and add components
             VBox difficultyLayout = new VBox(10);
@@ -200,13 +224,13 @@ public class QuizGame extends Application {
 
             // sündmuse lisamine nupule Jah
             yesButton.setOnAction(closeEvent -> {
-                    endGame.hide();
+                endGame.hide();
             });
 
             // sündmuse lisamine nupule Ei
             noButton.setOnAction(closeEvent -> {
-                    primaryStage.show();
-                    endGame.hide();
+                primaryStage.show();
+                endGame.hide();
 
             });
             VBox endGameLayout = new VBox(10);
@@ -228,12 +252,12 @@ public class QuizGame extends Application {
         });
 
         // Create a VBox layout and add components
-        VBox vbox = new VBox(10);
-        vbox.setPadding(new Insets(20));
+        VBox vbox = new VBox(20);
+        vbox.setPadding(new Insets(30));
         vbox.getChildren().addAll(welcomeLabel, nameLabel, nameTextField, nextButton);
 
         // Create the scene
-        Scene scene = new Scene(vbox, 400, 250, Color.SNOW);
+        Scene scene = new Scene(vbox, 450, 270, Color.SNOW);
 
         // Set stage properties
         primaryStage.setTitle("Quiz Game");
@@ -267,5 +291,7 @@ public class QuizGame extends Application {
             }
         });
     }
+
+
 
 }
